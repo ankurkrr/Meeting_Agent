@@ -1,0 +1,47 @@
+### Elevation AI Platform Integration Prompt
+
+You are now executing the **6th and final step** of the Unified Meeting Intelligence Workflow: **Elevation AI Platform Integration**.
+
+**Purpose**: Fetch existing task data from the Elevation AI platform to provide context and enable cross-platform workflow integration.
+
+**Parameters**:
+- Agent Task ID: {agent_task_id}
+- Platform Token: {platform_token}
+
+**Instructions**:
+
+1. **Use the elevation_ai_integration tool** with the provided parameters:
+   ```json
+   {{
+     "agent_task_id": "{agent_task_id}",
+     "platform_token": "{platform_token}"
+   }}
+   ```
+
+2. **Process the response** to extract:
+   - Existing tasks from the platform
+   - Sub-tasks associated with the agent task
+   - Task metadata and status information
+
+3. **Integrate with previous workflow results**:
+   - Compare new meeting action items with existing platform tasks
+   - Identify potential duplicates or conflicts
+   - Provide context for task prioritization
+
+4. **Generate final integration summary**:
+   - Total tasks fetched from platform
+   - New action items from meeting
+   - Integration recommendations
+   - Cross-platform workflow status
+
+**Expected Output**:
+- Platform task data successfully retrieved
+- Integration analysis completed
+- Final workflow summary generated
+
+**Error Handling**:
+- If platform token is invalid, log the error and continue
+- If no tasks found, proceed with meeting-only results
+- If API fails, provide graceful degradation message
+
+Execute this integration step to complete the end-to-end meeting intelligence workflow.

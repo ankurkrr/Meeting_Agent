@@ -1,0 +1,177 @@
+# =============================================================================
+# Meeting Intelligence Agent - Docker Ignore File
+# Optimizes Docker build by excluding unnecessary files
+# =============================================================================
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+.venv/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Git files
+.git/
+.gitignore
+.gitattributes
+
+# Documentation and markdown files (not needed in production)
+*.md
+docs/
+documentation/
+
+# Test files (not needed in production)
+test_*.py
+*_test.py
+tests/
+pytest.ini
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Logs and temporary files
+logs/
+*.log
+*.tmp
+*.temp
+.cache/
+
+# Environment files (use env.production instead)
+.env
+.env.local
+.env.development
+.env.test
+
+# Database files (using external Cloud SQL)
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated files
+generated_emails/
+meeting_summaries/
+*.pdf
+*.docx
+*.xlsx
+
+# Keys and secrets (handled separately) - EXCEPT keys directory needed for agent
+*.key
+*.pem
+*.crt
+*.p12
+
+# Docker files (not needed inside container)
+Dockerfile*
+docker-compose*.yml
+.dockerignore
+
+# Deployment scripts
+deploy*.sh
+deploy*.ps1
+redeploy*.sh
+redeploy*.ps1
+vm-*.sh
+vm-*.ps1
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Node.js (if any)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Cloud SQL Proxy (handled by Cloud Run)
+cloud-sql-proxy*
+
+# SSL certificates (handled by Cloud Run)
+*.crt
+*.key
+*.pem
+
+# Postman collections (not needed in production)
+*.postman_collection.json
+
+# PowerShell scripts (not needed in Linux container)
+*.ps1
+
+# Batch files (not needed in Linux container)
+*.bat
+
+# Shell scripts (not needed in container) - EXCEPT docker-startup.sh
+deploy*.sh
+redeploy*.sh
+vm-*.sh
+setup*.sh
+
+# Migration scripts (handled separately)
+migrate*.py
+migrate*.sql
+
+# Setup scripts (not needed in production)
+setup*.py
+setup*.sh
+
+# Debug and check scripts (not needed in production)
+debug*.py
+check*.py
+verify*.py
+
+# Manual test scripts (not needed in production)
+manual*.py
+
+# Fix scripts (not needed in production)
+fix*.py
+
+# Final system check scripts (not needed in production)
+final*.py
+
+# E2E test files (not needed in production)
+test_e2e*.py

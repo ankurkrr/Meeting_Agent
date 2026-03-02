@@ -1,0 +1,65 @@
+[Unit]
+Description=Meeting Intelligence Agent API Server
+Documentation=https://github.com/your-repo/meeting-agent
+After=network.target redis.service mysql.service
+Requires=redis.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=meeting-agent
+Group=meeting-agent
+WorkingDirectory=/opt/meeting-agent
+Environment="PATH=/opt/meeting-agent/venv/bin:/usr/local/bin:/usr/bin:/bin"
+Environment="PYTHONPATH=/opt/meeting-agent"
+Environment="APP_ENV=production"
+Environment="APP_ENVIRONMENT=production"
+Environment="REDIS_URL=redis://localhost:6379/0"
+
+# Start command
+ExecStart=/opt/meeting-agent/venv/bin/python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --workers 1 --log-level info
+
+# Auto-restart configuration
+Restart=always
+RestartSec=10
+StartLimitInterval=300
+StartLimitBurst=5
+
+# Logging
+StandardOutput=append:/opt/meeting-agent/logs/app.log
+StandardError=append:/opt/meeting-agent/logs/app.log
+SyslogIdentifier=meeting-agent
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+MemoryMax=2G
+CPUQuota=200%
+
+# Health check
+TimeoutStartSec=60
+TimeoutStopSec=30
+
+# Security hardening
+PrivateTmp=yes
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/opt/meeting-agent/logs /opt/meeting-agent/.env /opt/meeting-agent/keys
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictRealtime=yes
+RestrictNamespaces=yes
+LockPersonality=yes
+MemoryDenyWriteExecute=yes
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+# Kill configuration
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
+

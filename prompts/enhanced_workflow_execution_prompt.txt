@@ -1,0 +1,48 @@
+### Unified Meeting Intelligence Workflow (Current Production Flow)
+
+Execute the unified 6-step workflow with Elevation AI integration and Sheets distribution using the latest system behavior and guards.
+
+Parameters (provided by API; tokens already decrypted and validated):
+- Time window: {time_window_minutes} minutes
+- User ID: {user_id}
+- Workflow ID: {workflow_id}
+- Agent Task ID: {agent_task_id}
+- Platform token (resolved by API): {platform_token}
+
+Mandatory Steps (strict order):
+1. Calendar Scan: Use `calendar_tool` with EXACTLY `{{"minutes": {time_window_minutes}}}` to collect meetings within the last {time_window_minutes} minutes. Return normalized events with titles, attendees, and timestamps.
+2. Transcript Discovery (Drive): Use `enhanced_drive_tool` to find transcript documents per event. Immediately check `processed_document_history` to determine if a file version is unchanged. If unchanged, return `{{ "status": "skipped", "file_id": ..., "reason": "Version Match" }}` and DO NOT download or summarize.
+3. Summarization: For non-skipped documents only, use `summarizer_tool` to produce structured summaries: decisions, action items, risks, owners, and due dates.
+4. Dedup + Normalize Tasks: Use `dedup_tool` to remove duplicates and normalize tasks. Output concise, actionable items.
+5. Unified Distribution: Hand off the final tasks to the `UnifiedTaskService` which writes to Google Sheets and sends to the Elevation AI platform webhook in parallel. Ensure both destinations receive the same data payload and ids.
+6. Conditional Email: If and only if a `notify_to` list is present in the workflow payload/context, use `email_notification_tool` to send the summary email to exactly those recipients. Pass the calendar_tool_response data as calendar_metadata parameter to ensure real attendee emails are used. If `notify_to` is absent or empty, SKIP this step and record a reason in logs and final report.
+
+Behavioral Rules:
+- Respect Drive skip status. If `enhanced_drive_tool` returns `{{"status": "skipped"}}`, bypass summarization and dedup for that item and continue with other items.
+- Assume tokens (platform and Google) are already resolved and decrypted by the API layer. Do not perform token refresh here; this is handled by scheduled cron every ~30 minutes.
+- Maintain idempotency: rely on `processed_document_history` to avoid reprocessing unchanged documents. Only mark history after successful processing of a document.
+
+Audit Logging (emit activity entries via the API logger hooks):
+- Workflow Start (API Gateway): Workflow triggered; security context initialized; tokens decrypted.
+- Token Decryption (security): Tokens available for session and persistence.
+- Provisioning (Drive/Sheets): Ensure Drive folder and Meeting Tasks Sheet exist; record identifiers.
+- Calendar Scan (integration/calendar_tool): Events found in window.
+- Transcript Search (integration/enhanced_drive_tool): Documents retrieved for meeting.
+- Document Skipped (task/enhanced_drive_tool): Skipped due to version match (unchanged).
+- Summarization (task/summarizer_tool): Summary and tasks generated; record counts and model.
+- Dedup & Sheets Write (task/dedup_tool): Duplicates removed; unique tasks written; record Sheet id.
+- Email Notification (integration/email_notification_tool): Email sent to `notify_to` recipients. If skipped, record that `notify_to` was absent/empty.
+- Workflow Final Completion (task): All steps completed; final status persisted.
+
+Execution Guidance:
+- Validate outputs at each step; if a step produces no data, continue gracefully and log why.
+- Prefer concise, structured outputs. Include counts and identifiers when available (sheet id, drive file id, meeting id).
+- Fail soft: on non-critical errors, continue other parallelizable items and report partial results.
+
+Final Report (return to caller):
+- status: SUCCESS | PARTIAL | FAILED
+- metrics: duration, events_seen, docs_found, docs_skipped, docs_processed, tasks_total, tasks_written
+- destinations: sheets_id, platform_webhook_status
+- notes: any warnings, skipped reasons, or follow-ups
+
+Execute the workflow with these constraints to deliver efficient, idempotent meeting intelligence with synchronized Sheets and Platform outputs.

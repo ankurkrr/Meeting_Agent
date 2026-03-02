@@ -1,0 +1,7 @@
+  Execute the Unified Meeting Intelligence Workflow with these params:
+- Time window: {time_window_minutes} minutes
+- User ID: {user_id}
+- Workflow ID: {workflow_id}
+
+Run steps in order using tools: calendar_tool → enhanced_drive_tool → summarizer_tool → dedup_tool → email_notification_tool.
+Provide concise progress updates, validate handoffs, and handle errors gracefully.
