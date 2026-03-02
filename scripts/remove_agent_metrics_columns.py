@@ -57,7 +57,7 @@ def main() -> int:
         # Check current table structure
         print("\nChecking current table structure...")
         describe_query = "DESCRIBE agent"
-        current_columns = db.execute_query(describe_query)
+        current_columns = db.execute_query(describe_query)s
         
         existing_columns = [row[0] for row in current_columns] if current_columns else []
         print(f"Current columns in agent table: {', '.join(existing_columns)}")
